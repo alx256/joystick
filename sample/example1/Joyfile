@@ -1,0 +1,19 @@
+# This is an example Joyfile
+# Joyfiles are similar to Makefiles and use a simple
+# configuration language called Totem
+
+# Prints "Starting my build" to the output
+log("Starting my build")
+
+project: "Test" {
+        # The output name. i.e The name of the output file we want our
+        # project to compile to
+        output_name("TestProject")
+
+        # The language our project is written in. For a different language, 
+        # use a different project
+        language("C++")
+
+        # The list of source files that our executable will be compiled from
+        sources("main.cpp", "file1.cpp", "file2.cpp")
+}

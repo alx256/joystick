@@ -1,0 +1,30 @@
+# This is an example Joyfile
+# Joyfiles are similar to Makefiles and use a simple
+# configuration language called Totem
+
+# In this Joyfile, we will create a dynamic library and then link that with our final executable.
+
+project: "TestLib" {
+        output_name("Test")
+        output_type("Shared Library")
+        language("C++")
+        sources("file1.cpp", "file2.cpp")
+}
+
+project: "Test" {
+        # The output name. i.e The name of the output file we want our
+        # project to compile to
+        output_name("TestProject")
+
+        # The language our project is written in. For a different language, 
+        # use a different project
+        language("C++")
+
+        # The shared library we want to link our project against.
+        shared_lib("Test")
+
+	link_paths(".")
+
+        # The list of source files that our executable will be compiled from
+        sources("main.cpp")
+}
