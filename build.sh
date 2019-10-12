@@ -33,7 +33,7 @@ for file in *.cpp; do
 done
 
 if [ $J_FAILED = false ]; then
-	${J_COMP} -pthread ${J_ARGS} ${J_OBJS} -o joystick -lcurses -lform -lboost_system-mt -lboost_filesystem-mt -L/usr/local/lib
+	${J_COMP} -pthread ${J_ARGS} ${J_OBJS} -o joystick -lcurses -lform -lboost_system -lboost_filesystem -L/usr/local/lib
 	if [ $? -eq 0 ]; then
 		echo "Building Joystick complete!"
 		mv joystick ..
