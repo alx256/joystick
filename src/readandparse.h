@@ -49,13 +49,26 @@ private:
                == keywords.end();
     }
 
+    int getPlatform() {
+        #if defined(__APPLE__) || defined(__MACH__)
+            return 0;
+        #elif defined(_WIN32) || defined(_WIN64)
+            return 1;
+        #elif defined(__linux__) || defined(linux) || defined(__linux)
+            return 2;
+        #endif
+
+        return 3;
+    }
+
     bool functionActions(std::string& instruction, Console* parentConsole);
 
     bool strAction(std::string& instruction);
 
-    std::string line, instruction, finalInstruction, projectInstruction, functionInstruction, otherInstruction;
-    unsigned int linePlace = 0;
-    bool isFunction, isComment, isVariable, isParameter, isProject, event, hasStartedNewLine;
+    std::string line, instruction, finalInstruction, projectInstruction, platformInstruction, functionInstruction, otherInstruction;
+    unsigned int linePlace = 0, openedPlatformSpecifics = 0;
+    bool isFunction, isComment, isVariable, isParameter, isProject,
+        isDarwin, isWindows, isLinux, isPlatformSpecific, event, hasStartedNewLine;
     std::string variable;
 
     JoyfileProject joyfileProject;

@@ -14,6 +14,8 @@ bool JoyfileParser::parse(Console* parentConsole) {
     isParameter = false;
     isFunction = false;
 
+    openedPlatformSpecifics = 0;
+
     auto buildTimeStart = std::chrono::high_resolution_clock::now();
 
     // Reads file line by line
@@ -93,10 +95,36 @@ bool JoyfileParser::parse(Console* parentConsole) {
                 }
             }
 
+            // Checks if we are starting a platform block
+            if (!isDarwin || !isWindows || !isLinux) {
+                if (y != '[') {
+                    platformInstruction += y;
+                } else {
+                    if ((platformInstruction.find("@darwin") != std::string::npos))
+                        isDarwin = true;
+                    if ((platformInstruction.find("@windows") != std::string::npos))
+                        isWindows = true;
+                    if ((platformInstruction.find("@linux") != std::string::npos))
+                        isLinux = true;
+
+                    isPlatformSpecific = true;
+                    openedPlatformSpecifics++;
+
+                    platformInstruction.clear();
+                    event = true;
+                }
+            }
+
             if (isProject && y == '}') {
                 isProject = false;
                 projectInstruction.clear();
                 event = false;
+
+                // If some platform specific sections are still open (do not have an closing square bracket), return an error
+                if (openedPlatformSpecifics != 0) {
+                    error = Errors::missingEndSymbol("platform").getAll();
+                    return false;
+                }
 
                 // We've reached the end of our project block, so now we must compile the project
                 if (!execute(joyfileProject)) {
@@ -110,6 +138,15 @@ bool JoyfileParser::parse(Console* parentConsole) {
                 continue;
             } else if (!isProject && y == '}') {
                 error = Errors::unknownInstruction("Bad Project End", linePlace).getAll();
+            }
+
+            if (isPlatformSpecific && y == ']') {
+                isDarwin = false, isWindows = false, isLinux = false, isPlatformSpecific = false;
+                openedPlatformSpecifics--;
+                platformInstruction.clear();
+                continue;
+            } else if (!isPlatformSpecific && y == ']') {
+                error = Errors::unknownInstruction("Bad Platform End", linePlace).getAll();
             }
 
             if (y == '(' && isFunction) {
@@ -137,6 +174,24 @@ bool JoyfileParser::parse(Console* parentConsole) {
                 if (y == ')') {
                     isFunction = false;
                     event = false;
+
+                    // Check if the function is only meant to be run for a specific platform
+                    if (isPlatformSpecific) {
+                        if (isDarwin && (getPlatform() != 0)) {
+                            instruction.clear();
+                            continue;
+                        }
+
+                        if (isWindows && (getPlatform() != 1)) {
+                            instruction.clear();
+                            continue;
+                        }
+
+                        if (isLinux && (getPlatform() != 2)) {
+                            instruction.clear();
+                            continue;
+                        }
+                    }
 
                     if (!functionActions(instruction, parentConsole))
                         return false;
