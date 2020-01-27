@@ -1,5 +1,8 @@
 project: "Joystick" {
-	cpp_compiler("c++")
+    cpp_compiler("c++")
+    @darwin [
+        cpp_compiler("/Library/Developer/CommandLineTools/usr/bin/c++")
+    ]
 	output_name("joystick")
 	language("C++")
 	sources("console.cpp", "consoleui.cpp", "errors.cpp", "executeprocess.cpp", "main.cpp", "readandparse.cpp", "runcommand.cpp")
