@@ -65,7 +65,7 @@ private:
 
     bool strAction(std::string& instruction);
 
-    std::string line, instruction, finalInstruction, projectInstruction, platformInstruction, functionInstruction, otherInstruction;
+    std::string line, instruction, finalInstruction, projectInstruction, platformInstruction, functionInstruction, otherInstruction, pathSimple;
     unsigned int linePlace = 0, openedPlatformSpecifics = 0;
     bool isFunction, isComment, isVariable, isParameter, isProject,
         isDarwin, isWindows, isLinux, isPlatformSpecific, event, hasStartedNewLine;

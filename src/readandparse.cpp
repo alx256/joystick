@@ -218,9 +218,12 @@ bool JoyfileParser::parse(Console* parentConsole) {
                             lastCompileTimeStreamRead >> lastCompTime;
                             lastCompileTimeStreamRead.close();
 
+                            // Check if a source file needs to be recompiled
                             for (int i = 0; i <= instructionList.size() - 1; i++) {
+                                pathSimple = instructionList[i].substr(instructionList[i].find_last_of("/") + 1, instructionList[i].size() - 1);
                                 if ((std::difftime(lastCompTime, boost::filesystem::last_write_time(parentConsole->rawPath + '/' + instructionList[i])) <= 0) ||
-                                        !boost::filesystem::exists(parentConsole->rawPath + "/.joystick/objects/" + joyfileProject.name + '/' + instructionList[i].substr(0, instructionList[i].find_first_of(".")) + ".o"))
+                                        !boost::filesystem::exists(parentConsole->rawPath + "/.joystick/objects/" + joyfileProject.name + '/' + 
+                                        pathSimple.substr(0, pathSimple.find_first_of(".")) + ".o"))
                                     sourcesInstructionList.push_back(instructionList[i]);
                             }
                             if (sourcesInstructionList.empty())
