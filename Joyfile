@@ -9,5 +9,6 @@ project: "Joystick" {
 	shared_lib("boost_filesystem", "boost_system", "curses", "pthread", "form")
 	include_paths("/usr/local/include", "/usr/include")
 	link_paths("/usr/local/lib", "/usr/include")
-	extra_compilation_options("-std=c++17")
+	extra_compilation_options("-g -std=c++17")
+	install_location("/usr/bin/")
 }
