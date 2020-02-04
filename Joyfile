@@ -5,10 +5,20 @@ project: "Joystick" {
     ]
 	output_name("joystick")
 	language("C++")
-	sources("console.cpp", "consoleui.cpp", "errors.cpp", "executeprocess.cpp", "main.cpp", "readandparse.cpp", "runcommand.cpp")
-	shared_lib("boost_filesystem", "boost_system", "curses", "pthread", "form")
+	sources("src/console.cpp",
+			"src/consoleui.cpp",
+			"src/errors.cpp",
+			"src/executeprocess.cpp",
+			"src/main.cpp",
+			"src/readandparse.cpp",
+			"src/runcommand.cpp")
+	shared_lib("boost_filesystem",
+			"boost_system",
+			"curses",
+			"pthread",
+			"form")
 	include_paths("/usr/local/include", "/usr/include")
 	link_paths("/usr/local/lib", "/usr/include")
 	extra_compilation_options("-g -std=c++17")
-	install_location("/usr/bin/")
+#	install_location("/usr/bin/")
 }
