@@ -17,6 +17,7 @@
 std::string errOutput, errOutputCommand, _rawPath, compOut;
 std::string warnings;
 JoyfileProject project;
+JoystickDirectory dir;
 
 std::ifstream errOutputStream;
 std::thread compilationThread;
@@ -81,14 +82,8 @@ bool execute(JoyfileProject _project) {
     std::string lang = project.language, comp, raw, type = project.output_type, staticLib, sharedLib;
     std::ostringstream objects;
 
-    boost::filesystem::create_directory(_rawPath + "/.joystick/objects/" + project.name);
-
-    boost::filesystem::create_directory(_rawPath + "/.joystick");
-    boost::filesystem::create_directory(_rawPath + "/.joystick/objects");
-    boost::filesystem::create_directory(_rawPath + "/.joystick/output");
-    boost::filesystem::create_directory(_rawPath + "/.joystick/objects/" + project.name + "/dat");
-    std::system(std::string("touch " + _rawPath + "/.joystick/objects/" + project.name + "/dat/.last_comp_time").c_str());
-    std::system(std::string("touch " + _rawPath + "/.joystick/output/.comp_out").c_str());
+	dir = JoystickDirectory(_rawPath, project.name);
+	dir.update();
 
     int last;
 

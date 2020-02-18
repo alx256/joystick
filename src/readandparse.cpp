@@ -15,13 +15,6 @@
 #include "readandparse.h"
 
 bool JoyfileParser::parse(Console* parentConsole) {
-    // Creates .joystick directory if necessary
-    if (!boost::filesystem::exists(parentConsole->rawPath + "/.joystick")) {
-        boost::filesystem::create_directory(parentConsole->rawPath + "/.joystick");
-        boost::filesystem::create_directory(parentConsole->rawPath + "/.joystick/objects");
-        boost::filesystem::create_directory(parentConsole->rawPath + "/.joystick/output");
-    }
-
     stream = std::ifstream(path);
 
     joyfileProject.parentConsole = parentConsole;

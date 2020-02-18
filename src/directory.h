@@ -15,24 +15,20 @@
 #pragma once
 
 #include <string>
-#include <sstream>
-#include <chrono>
-#include <fstream>
-#include <thread>
+#include <vector>
 
 #include <boost/filesystem.hpp>
 
-#include "console.h"
-#include "joyfileproject.h"
-#include "errors.h"
-#include "runcommand.h"
-#include "macros.h"
-#include "directory.h"
+class JoystickDirectory {
+public:
+	JoystickDirectory() {}
+	~JoystickDirectory() {}
+	JoystickDirectory(const std::string& rawPath, const std::string& projName);
 
-bool execute(JoyfileProject project);
-extern void getWarnings(std::string command);
-extern void multithreadComp();
-static bool compilationSuccess;
-extern std::string errOutput;
-extern JoystickDirectory dir;
-static std::ofstream lastCompileTimeStream;
+	bool update();
+
+private:
+	std::string rawPath, prefix;
+	std::vector<std::string> directories, files;
+	bool status;
+};
