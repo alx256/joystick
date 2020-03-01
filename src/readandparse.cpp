@@ -24,6 +24,7 @@ bool JoyfileParser::parse(Console* parentConsole) {
     openedPlatformSpecifics = 0;
 
     auto buildTimeStart = std::chrono::high_resolution_clock::now();
+	bool ignoreNext = true;
 
     // Reads file line by line
     while(std::getline(stream, line)) {
@@ -48,11 +49,18 @@ bool JoyfileParser::parse(Console* parentConsole) {
                 hasStartedNewLine = false;
 
             // Sets isParameter when necessary so spaces can be appropriately ignored
-            if (y == '"' && isFunction &&
+            if (y == '"' && isFunction && !ignoreNext &&
                     (JoystickTotemLibrary::functions[finalInstruction] == TOTEM_TYPE_STRING
                      || JoystickTotemLibrary::projectFunctions[finalInstruction] == TOTEM_TYPE_STRING)) {
                 isParameter = !isParameter;
             }
+
+			if (ignoreNext)
+				ignoreNext = false;
+
+			// Use backslash to ignore " characters
+			if (y == '\\' && isParameter) 
+				ignoreNext = true;
 
             // Spaces confuse things, so we ignore them
             if ((y == ' ' || y == '\t') && !isParameter)
@@ -343,9 +351,12 @@ bool JoyfileParser::functionActions(std::string& instruction, Console* parentCon
 
 bool JoyfileParser::strAction(std::string& instruction) {
     int counter = 0;
+	char previous;
 
-    for (char y : instruction)
-        if (y == '"') counter++;
+    for (char y : instruction) {
+        if (y == '"' && previous != '\\') counter++;
+		previous = y;
+	}
 
     if ((instruction[0] == '"') && (instruction[instruction.size() - 1] == '"') && counter <= 2) {
         instruction.erase(0, 1);
