@@ -29,7 +29,12 @@ JoystickDirectory::JoystickDirectory(const std::string& rawPath, const std::stri
 }
 
 bool JoystickDirectory::update() {
-    if (!boost::filesystem::exists(prefix)) {
+    updateRequired = !boost::filesystem::exists(prefix);
+
+    for (std::string directory : directories)
+        updateRequired |= !boost::filesystem::exists(prefix + directory);
+
+    if (updateRequired) {
 		boost::filesystem::create_directory(prefix);
 
 		for (const std::string& dir : directories) {

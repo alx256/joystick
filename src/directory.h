@@ -30,5 +30,5 @@ public:
 private:
 	std::string rawPath, prefix;
 	std::vector<std::string> directories, files;
-	bool status;
+	bool status, updateRequired;
 };
