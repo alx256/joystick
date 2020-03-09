@@ -137,8 +137,8 @@ bool execute(JoyfileProject _project) {
         for (std::string includePath : project.include_paths)
             command << " -I" << includePath;
 
-        for (std::string linkPath : project.link_paths)
-            command << " -L" << linkPath;
+        /* for (std::string linkPath : project.link_paths)
+            command << " -L" << linkPath; */
 
         if (!project.extra_compilation_options.empty())
             command << ' ' << project.extra_compilation_options;
