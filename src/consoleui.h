@@ -18,6 +18,7 @@ class JoyfileParser;
 class Console;
 
 #include <string>
+#include <iostream>
 #include <vector>
 #include <utility>
 #include <fstream>
@@ -26,6 +27,8 @@ class Console;
 #include <cmath>
 #include <sstream>
 
+#include <unistd.h>
+
 #include <locale.h>
 #ifdef USE_NCURSESW
 #include <ncursesw/ncurses.h>
@@ -33,6 +36,8 @@ class Console;
 #include <curses.h>
 #endif
 #include <boost/filesystem.hpp>
+#include <boost/asio/error.hpp>
+#include <boost/system/error_code.hpp>
 
 #include "console.h"
 #include "readandparse.h"
@@ -54,6 +59,10 @@ public:
     // Used by the parser to add live log
     void buildLog(const std::string& message, bool bold = false, int color = 0) override;
 
+    // Used by the parser to set the install and file paths
+    void setInstallLocation(const std::string& _installLocation, const std::string& project);
+    void setFileName(const std::string& _fileName, const std::string& project);
+    
     // Starts compilation loading bar
     void startLoadingBar(const size_t& maxSize) override;
 
@@ -72,6 +81,8 @@ private:
     std::vector<std::pair<std::string, bool>> currentLog;
     // The attributes associated with each line of the build log
     std::vector<std::pair<bool, int>> currentLogAttrs;
+    // For checking if a project name is valid
+    std::vector<std::string> projects;
     // Used for scrolling
     int consoleLines = 0, startIndex, endIndex, startIndexPrev, endIndexPrev;
 
@@ -112,4 +123,9 @@ private:
 
     // Used for controlling the loading bar
     size_t loadingSizeMax, loadingSizeCurr;
+
+    // Used for installation
+    std::map<std::string, std::string> installLocation, fileName;
+
+    std::string proj, name, install;
 };

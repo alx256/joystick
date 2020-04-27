@@ -32,7 +32,7 @@ struct JoyfileProject {
                 output_type = "binary";
 
     // Empty
-    std::string extra_compilation_options, framework;
+    std::string extra_compilation_options, framework, install_location;
     std::vector<std::string> static_lib, shared_lib, include_paths, link_paths;
 
     Console* parentConsole = nullptr;

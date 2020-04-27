@@ -47,6 +47,10 @@ public:
     std::string getError();
 
     bool parse(Console *parentConsole);
+
+    // For installing the project
+    std::map<std::string, std::string> getInstallLocation();
+    std::map<std::string, std::string> getFileName();
 private:
     std::ifstream stream;
 
@@ -57,7 +61,7 @@ private:
     };
 
     std::vector<std::string> instructionList, sourcesInstructionList;
-
+    
     bool isKeyword(std::string instruction) {
         return std::find(keywords.begin(), keywords.end(), instruction)
                == keywords.end();
@@ -89,6 +93,8 @@ private:
 
     std::ifstream lastCompileTimeStreamRead;
     std::time_t lastCompTime;
+
+    std::map<std::string, std::string> installLocation, fileName;
 };
 
 struct JoystickTotemLibrary {

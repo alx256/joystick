@@ -35,5 +35,5 @@ project: "Joystick" {
 	include_paths("/usr/local/include", "/usr/include")
 	link_paths("/usr/local/lib", "/usr/include")
 	extra_compilation_options("-g -std=c++17")
-#	install_location("/usr/bin/")
+    install_location("/usr/local/bin/")
 }

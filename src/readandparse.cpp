@@ -41,7 +41,6 @@ bool JoyfileParser::parse(Console* parentConsole) {
         hasStartedNewLine = true;
 
         for (char y : line) {
-            // Increases the column number (for error logging)
             isComment = false;
 
             // Ignores all spaces in front of a line when a new line is started
@@ -146,6 +145,9 @@ bool JoyfileParser::parse(Console* parentConsole) {
                     error = errOutput;
                     return false;
                 }
+
+                parentConsole->setInstallLocation(joyfileProject.install_location, joyfileProject.name);
+                parentConsole->setFileName(joyfileProject.output_name, joyfileProject.name);
 
                 // Resets our project
                 joyfileProject = JoyfileProject();
@@ -258,6 +260,8 @@ bool JoyfileParser::parse(Console* parentConsole) {
                         joyfileProject.framework = instruction;
                     } else if (finalInstruction == "cpp_compiler") {
                         joyfileProject.cpp_compiler = instruction;
+                    } else if (finalInstruction == "install_location") {
+                        joyfileProject.install_location = instruction;
                     }
 
                     instruction.clear();
@@ -299,6 +303,9 @@ bool JoyfileParser::parse(Console* parentConsole) {
 
     return true;
 }
+
+std::map<std::string, std::string> JoyfileParser::getInstallLocation() { return installLocation; }
+std::map<std::string, std::string> JoyfileParser::getFileName() { return fileName; }
 
 bool JoyfileParser::functionActions(std::string& instruction, Console* parentConsole) {
     switch(JoystickTotemLibrary::functions[finalInstruction]) {
@@ -397,5 +404,6 @@ std::map<std::string, int> JoystickTotemLibrary::projectFunctions = {
     std::make_pair("include_paths", TOTEM_TYPE_LIST(TOTEM_TYPE_STRING)),
     std::make_pair("link_paths", TOTEM_TYPE_LIST(TOTEM_TYPE_STRING)),
     std::make_pair("framework", TOTEM_TYPE_STRING),
-    std::make_pair("cpp_compiler", TOTEM_TYPE_STRING)
+    std::make_pair("cpp_compiler", TOTEM_TYPE_STRING),
+    std::make_pair("install_location", TOTEM_TYPE_STRING)
 };

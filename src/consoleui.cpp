@@ -289,6 +289,40 @@ bool ConsoleUI::execCommand(const std::string& command) {
 
         if (!parser->parse(this))
             consoleLog("Error: " + parser->getError(), true, CONSOLE_COLOR_RED);
+    } else if (command.substr(0, 7)  == "install") {
+        clearConsole();
+
+        if (command.size() <= 8) {
+            consoleLog("No install path specified!");
+        } else {
+            bool valid = false;
+            std::string projName = command.substr(8, command.size());
+            for (const std::string& project : projects) {
+                if (project == projName) {
+                    valid = true;
+                    break;
+                }
+            }
+
+            if (!valid) {
+                consoleLog("Invalid project name: " + projName);
+                return false;
+            }
+
+            install = installLocation[projName];
+            name = fileName[projName];
+
+            consoleLog("Installing to path " + install);
+
+            // Check if target directory is writable by seeing if creating a directory
+            // iterator fails or not
+            // If it is writable, just perform the copy action
+            // If not, exit the window to provide the user to enter their password
+            endwin();
+            std::system(std::string("sudo cp " + name + " " + install + " 2>&1").c_str());
+            std::cout << "Press ENTER to continue\n";
+            std::cin.ignore();
+        }
     } else if (command == "clear") {
         clearConsole();
     } else if (command == "scroll") {
@@ -315,6 +349,13 @@ void ConsoleUI::buildLog(const std::string& message, bool bold, int color)  {
     outputLog << '[' << currTime << "] " << message << '\n';
     updateLog();
 }
+
+void ConsoleUI::setInstallLocation(const std::string& _installLocation, const std::string& project) {
+    projects.push_back(project);
+    installLocation[project] = _installLocation;
+}
+
+void ConsoleUI::setFileName(const std::string& _fileName, const std::string& project) { fileName[project] = _fileName; }
 
 void ConsoleUI::scrollIfNeeded(const int& y) {
     // Scroll required

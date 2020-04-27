@@ -18,6 +18,7 @@ class JoyfileParser;
 
 #include <fstream>
 #include <string>
+#include <map>
 
 class Console {
 public:
@@ -37,6 +38,10 @@ public:
 
     // The function used by external functions to output to the log
     virtual void buildLog(const std::string& message, bool bold = false, int color = 0) = 0;
+
+    // Used by the parser to set the install and file paths
+    virtual void setInstallLocation(const std::string& _installLocation, const std::string& project) = 0;
+    virtual void setFileName(const std::string& _fileName, const std::string& project) = 0;
 
     virtual void startLoadingBar(const size_t& maxSize) = 0;
     virtual void updateLoadingBar(const size_t& updateSize) = 0;
