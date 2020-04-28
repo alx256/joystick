@@ -23,7 +23,6 @@ JoystickDirectory::JoystickDirectory(const std::string& rawPath, const std::stri
 		"output"
 	};
 	files = {
-		"objects/" + projName + ".last_comp_time",
 		"output/.comp_out"
 	};
 }
