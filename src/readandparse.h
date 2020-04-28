@@ -15,7 +15,6 @@
 #pragma once
 
 class Console;
-class ConsoleUI;
 
 #include <string>
 #include <fstream>
@@ -36,38 +35,23 @@ class ConsoleUI;
 
 class JoyfileParser {
 public:
-
     // Constructors
-    JoyfileParser() {}
-    JoyfileParser(std::string _path): path(_path) {}
-    JoyfileParser(const JoyfileParser&) {}
-    JoyfileParser& operator=(const JoyfileParser& jp);
+    JoyfileParser();
+    ~JoyfileParser();
 
-    std::string getPath();
-    std::string getError();
+    inline std::string getPath()  { return path; }
+    inline std::string getError() { return error; }
 
-    bool parse(Console *parentConsole);
+    bool parse(Console* parentConsole);
+
+    void clean();
+    void setPath(const std::string& _path);
 
     // For installing the project
     std::map<std::string, std::string> getInstallLocation();
     std::map<std::string, std::string> getFileName();
 private:
-    std::ifstream stream;
-
-    std::string path, error;
-
-    std::vector<std::string> keywords = {
-        "use"
-    };
-
-    std::vector<std::string> instructionList, sourcesInstructionList;
-    
-    bool isKeyword(std::string instruction) {
-        return std::find(keywords.begin(), keywords.end(), instruction)
-               == keywords.end();
-    }
-
-    int getPlatform() {
+    inline int getPlatform() const {
         #if defined(__APPLE__) || defined(__MACH__)
             return 0;
         #elif defined(_WIN32) || defined(_WIN64)
@@ -79,21 +63,21 @@ private:
         return 3;
     }
 
-    bool functionActions(std::string& instruction, Console* parentConsole);
+    bool functionActions(std::string& instruction);
 
     bool strAction(std::string& instruction);
 
+    std::ifstream stream;
+    std::string path, error;
+    std::vector<std::string> instructionList, sourcesInstructionList;
     std::string line, instruction, finalInstruction, projectInstruction, platformInstruction, functionInstruction, otherInstruction, pathSimple;
-    unsigned int linePlace = 0, openedPlatformSpecifics = 0;
+    unsigned int linePlace, openedPlatformSpecifics;
     bool isFunction, isComment, isVariable, isParameter, isProject,
         isDarwin, isWindows, isLinux, isPlatformSpecific, event, hasStartedNewLine;
     std::string variable;
-
     JoyfileProject joyfileProject;
-
     std::ifstream lastCompileTimeStreamRead;
     std::time_t lastCompTime;
-
     std::map<std::string, std::string> installLocation, fileName;
 };
 

@@ -69,7 +69,6 @@ public:
     // Updates compilation loading bar
     void updateLoadingBar(const size_t& updateSize) override;
 private:
-
     // The window at the bottom where the user enters commands
     WINDOW* inputWindow;
     // The main window that displays output
@@ -128,4 +127,7 @@ private:
     std::map<std::string, std::string> installLocation, fileName;
 
     std::string proj, name, install;
+
+    // The parser
+    JoyfileParser parser;
 };

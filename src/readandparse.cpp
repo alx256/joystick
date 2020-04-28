@@ -14,6 +14,47 @@
 
 #include "readandparse.h"
 
+JoyfileParser::JoyfileParser() {}
+
+JoyfileParser::~JoyfileParser() {}
+
+void JoyfileParser::setPath(const std::string& _path) {
+    path = _path;
+}
+
+void JoyfileParser::clean() {
+    stream.close();
+    error = "";
+    instructionList = {};
+    sourcesInstructionList = {};
+    line = "";
+    instruction = "";
+    finalInstruction = "";
+    platformInstruction = "";
+    functionInstruction = "";
+    otherInstruction = "";
+    pathSimple = "";
+    linePlace = 0;
+    openedPlatformSpecifics = 0;
+    isFunction = false;
+    isComment = false;
+    isVariable = false;
+    isParameter = false;
+    isProject = false;
+    isDarwin = false;
+    isWindows = false;
+    isLinux = false;
+    isPlatformSpecific = false;
+    event = false;
+    hasStartedNewLine = false;
+    variable = "";
+    joyfileProject = JoyfileProject();
+    lastCompileTimeStreamRead.close();
+    lastCompTime = 0;
+    installLocation = {};
+    fileName = {};
+}
+
 bool JoyfileParser::parse(Console* parentConsole) {
     stream = std::ifstream(path);
 
@@ -210,7 +251,7 @@ bool JoyfileParser::parse(Console* parentConsole) {
                         }
                     }
 
-                    if (!functionActions(instruction, parentConsole))
+                    if (!functionActions(instruction))
                         return false;
 
                     if (finalInstruction == "log") {
@@ -307,7 +348,7 @@ bool JoyfileParser::parse(Console* parentConsole) {
 std::map<std::string, std::string> JoyfileParser::getInstallLocation() { return installLocation; }
 std::map<std::string, std::string> JoyfileParser::getFileName() { return fileName; }
 
-bool JoyfileParser::functionActions(std::string& instruction, Console* parentConsole) {
+bool JoyfileParser::functionActions(std::string& instruction) {
     switch(JoystickTotemLibrary::functions[finalInstruction]) {
     case TOTEM_TYPE_STRING:
         return strAction(instruction);
@@ -373,13 +414,6 @@ bool JoyfileParser::strAction(std::string& instruction) {
         error = Errors::invalidParameter(instruction, linePlace).getAll();
         return false;
     }
-}
-
-std::string JoyfileParser::getError()                   {
-    return error;
-}
-std::string JoyfileParser::getPath()                    {
-    return path;
 }
 
 bool JoystickTotemLibrary::isFunction(std::string instruction)          {

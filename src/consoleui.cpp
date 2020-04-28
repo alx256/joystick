@@ -43,8 +43,10 @@ void ConsoleUI::start(std::string startingCommand) {
     logWindow = newwin(maxY - 2, maxX, 0, 0);
     secondaryWindow = newwin(1, maxX, maxY - 2, 0);
 
+    parser.setPath(Console::path);
+
     consoleLog("Joystick version " + std::string(JOYSTICK_VERSION));
-    consoleLog("Using Joyfile: " + parser->getPath());
+    consoleLog("Using Joyfile: " + parser.getPath());
 
     // Log to be used for parser output
     time_t currTime = system_clock::to_time_t(system_clock::now());
@@ -145,8 +147,7 @@ void ConsoleUI::start(std::string startingCommand) {
             }
         }
     }
-
-    delete parser;
+    
     stop();
 }
 
@@ -280,15 +281,12 @@ bool ConsoleUI::execCommand(const std::string& command) {
     } else if (command == "start") {
         clearConsole();
 
-        delete parser; // Free parser memory
-
-        // Clean parser and reallocate memory
-        Console::parser = new JoyfileParser(Console::path);
+        parser.clean();
 
         consoleLog("Starting parsing process");
 
-        if (!parser->parse(this))
-            consoleLog("Error: " + parser->getError(), true, CONSOLE_COLOR_RED);
+        if (!parser.parse(this))
+            consoleLog("Error: " + parser.getError(), true, CONSOLE_COLOR_RED);
     } else if (command.substr(0, 7)  == "install") {
         clearConsole();
 

@@ -14,8 +14,6 @@
 
 #pragma once
 
-class JoyfileParser;
-
 #include <fstream>
 #include <string>
 #include <map>
@@ -52,7 +50,4 @@ public:
     // Debug mode enabled/disabled
     bool debug;
     int id;
-protected:
-    // The parser
-    JoyfileParser* parser;
 };

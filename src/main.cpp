@@ -96,14 +96,12 @@ int main(int argc, const char ** argv) {
     }
 
     // Prevents the path having two slashes. It will still work, but it looks nicer with only one.
-    ConsoleUI* console = new ConsoleUI(path + std::string((path[path.size() - 1] != '/') ? "/Joyfile" : "Joyfile"), path);
+    ConsoleUI console(path + std::string((path[path.size() - 1] != '/') ? "/Joyfile" : "Joyfile"), path);
 
     if (!execCommand.empty())
-        console->start(execCommand);
+        console.start(execCommand);
     else
-        console->start();
-
-    delete console;
-
+        console.start();
+    
     return 0;
 }
