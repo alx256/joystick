@@ -113,6 +113,9 @@ bool execute(JoyfileProject _project) {
     }
 
     for (std::string source : project.sources) {
+        // Don't bother recompiling if the .o file for the source
+        // file already exists
+
         command.str("");
 
         last = source.find_last_of('.');
@@ -123,10 +126,14 @@ bool execute(JoyfileProject _project) {
             raw = raw.substr(last, raw.size());
         }
 
+        std::string objectFile = _rawPath + "/.joystick/objects/" + project.name + "/" + raw + ".o";
+        if (boost::filesystem::exists(objectFile))
+            continue;
+
         if (lang == "C++" || lang == "C" || lang == "c++" || lang == "c" || lang == "cpp") {
             command << comp
                     << " -c " + _rawPath + '/' + source
-                    << " -o " + _rawPath + "/.joystick/objects/" + project.name + '/' + raw + ".o";
+                    << " -o " + objectFile;
         } else {
             command << project.python_interpreter;
         }
@@ -153,6 +160,7 @@ bool execute(JoyfileProject _project) {
             // Error occured
             errOutput = "Compilation failed";
             return false;
+        } else {
         }
 
         errOutputStream.close();
