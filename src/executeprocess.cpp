@@ -113,9 +113,6 @@ bool execute(JoyfileProject _project) {
     }
 
     for (std::string source : project.sources) {
-        // Don't bother recompiling if the .o file for the source
-        // file already exists
-
         command.str("");
 
         last = source.find_last_of('.');
@@ -127,6 +124,8 @@ bool execute(JoyfileProject _project) {
         }
 
         std::string objectFile = _rawPath + "/.joystick/objects/" + project.name + "/" + raw + ".o";
+        // Don't bother recompiling if the .o file for the source
+        // file already exists
         if (boost::filesystem::exists(objectFile))
             continue;
 
@@ -160,7 +159,6 @@ bool execute(JoyfileProject _project) {
             // Error occured
             errOutput = "Compilation failed";
             return false;
-        } else {
         }
 
         errOutputStream.close();
