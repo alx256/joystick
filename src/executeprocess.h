@@ -31,7 +31,7 @@
 
 bool execute(JoyfileProject project);
 extern void getWarnings(std::string command);
-extern void multithreadComp();
+extern void multithreadComp(bool warnings = true);
 static bool compilationSuccess;
 extern std::string errOutput;
 extern JoystickDirectory dir;

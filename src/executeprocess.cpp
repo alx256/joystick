@@ -27,9 +27,11 @@ void getWarnings(std::string command) {
     warnings = runCommand(command.c_str(), project.parentConsole->debug);
 }
 
-void multithreadComp() {
-    compilationThread = std::thread(getWarnings, std::string(command.str() + " -Wall -Wextra 2>&1"));
-    compOut = runCommand(std::string(command.str() + " -w 2>" + _rawPath + "/.joystick/output/.comp_out").c_str(), project.parentConsole->debug);
+void multithreadComp(bool warnings) {
+    compilationThread = std::thread(getWarnings,
+            (warnings) ? std::string(command.str() + " -Wall -Wextra 2>&1") : command.str());
+    compOut = runCommand(std::string(command.str() + 
+            ((warnings) ? " -w " : "") + "2>" + _rawPath + "/.joystick/output/.comp_out").c_str(), project.parentConsole->debug);
 
     errOutputStream.open(_rawPath + "/.joystick/output/.comp_out");
 
@@ -177,27 +179,29 @@ bool execute(JoyfileProject _project) {
     else
         command << comp << " " << objects.str() << " -o " << project.output_name + " -Wall";
 
-    for (std::string sharedLibLink : project.shared_lib)
-        command << " -l" << sharedLibLink;
+   if (staticLib.empty() && sharedLib.empty()) {
+        for (std::string sharedLibLink : project.shared_lib)
+            command << " -l" << sharedLibLink;
 
-    if (!project.extra_compilation_options.empty())
-        command << ' ' << project.extra_compilation_options;
+        if (!project.extra_compilation_options.empty())
+            command << ' ' << project.extra_compilation_options;
 
-    for (std::string includePath : project.include_paths)
-        command << " -I" << includePath;
+        for (std::string includePath : project.include_paths)
+            command << " -I" << includePath;
 
-    for (std::string linkPath : project.link_paths)
-        command << " -L" << linkPath;
+        for (std::string linkPath : project.link_paths)
+            command << " -L" << linkPath;
 
-    if (!project.framework.empty() && project.cpp_compiler == "clang++")
-        command << " -framework " << project.framework;
-
+        if (!project.framework.empty() && project.cpp_compiler == "clang++")
+            command << " -framework " << project.framework;
+    }
+    
     if (project.parentConsole->id == JOYSTICK_CONSOLE_UI)
         project.parentConsole->updateLoadingBar(1);
 
     project.parentConsole->buildLog("Finishing " + project.output_name + "...", true /* BOLD */, CONSOLE_COLOR_BLUE /* COLOR */);
 
-    multithreadComp();
+    multithreadComp(staticLib.empty() && sharedLib.empty());
 
     project.parentConsole->buildLog(compOut);
     project.parentConsole->buildLog(warnings);
