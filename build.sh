@@ -15,9 +15,10 @@
 #  limitations under the License.
 
 J_BOOST_LINK=/usr/local/include/
-J_ARGS="-pthread -std=c++17 -I/usr/local/include"
+J_ARGS="-pthread -std=c++17 -I/usr/local/include -fsanitize=address"
 J_FAILED=false
 J_OBJS=""
+
 if  [[ "$OSTYPE" == "darwin"* ]]; then
 	J_COMP="/Library/Developer/CommandLineTools/usr/bin/c++"
 else
