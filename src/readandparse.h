@@ -27,11 +27,11 @@ class Console;
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
-#include "console.h"
 #include "macros.h"
 #include "joyfileproject.h"
 #include "errors.h"
 #include "executeprocess.h"
+#include "log.h"
 
 class JoyfileParser {
 public:
@@ -42,7 +42,7 @@ public:
     inline std::string getPath()  { return path; }
     inline std::string getError() { return error; }
 
-    bool parse(Console* parentConsole);
+    bool parse();
 
     void clean();
     void setPath(const std::string& _path);
@@ -68,7 +68,7 @@ private:
     bool strAction(std::string& instruction);
 
     std::ifstream stream;
-    std::string path, error;
+    std::string path, rawPath, error;
     std::vector<std::string> instructionList, sourcesInstructionList;
     std::string line, instruction, finalInstruction, projectInstruction, platformInstruction, functionInstruction, otherInstruction, pathSimple;
     unsigned int linePlace, openedPlatformSpecifics;

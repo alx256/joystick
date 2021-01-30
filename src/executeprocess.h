@@ -22,12 +22,12 @@
 
 #include <boost/filesystem.hpp>
 
-#include "console.h"
 #include "joyfileproject.h"
 #include "errors.h"
 #include "runcommand.h"
 #include "macros.h"
 #include "directory.h"
+#include "log.h"
 
 bool execute(JoyfileProject project);
 extern void getWarnings(std::string command);

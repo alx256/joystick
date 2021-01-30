@@ -24,4 +24,4 @@
 #include <fstream>
 #include <thread>
 
-std::string runCommand(const char * command, bool debug = false);
+std::string runCommand(const std::string& command, bool debug = false);

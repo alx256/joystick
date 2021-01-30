@@ -18,8 +18,9 @@ JoyfileParser::JoyfileParser() {}
 
 JoyfileParser::~JoyfileParser() {}
 
-void JoyfileParser::setPath(const std::string& _path) {
-    path = _path;
+void JoyfileParser::setPath(const std::string& _rawPath) {
+    path = _rawPath + "/Joyfile";
+    rawPath = _rawPath;
 }
 
 void JoyfileParser::clean() {
@@ -55,10 +56,16 @@ void JoyfileParser::clean() {
     fileName = {};
 }
 
-bool JoyfileParser::parse(Console* parentConsole) {
-    stream = std::ifstream(path);
+bool JoyfileParser::parse() {
+    stream.open(path);
 
-    joyfileProject.parentConsole = parentConsole;
+    if (stream.bad()) {
+        error = Errors::invalidJoyfile(path).getAll();
+        return false;
+    }
+
+    joyfileProject.rawPath = rawPath;
+
     isParameter = false;
     isFunction = false;
 
@@ -66,7 +73,6 @@ bool JoyfileParser::parse(Console* parentConsole) {
 
     auto buildTimeStart = std::chrono::high_resolution_clock::now();
 	bool ignoreNext = true;
-
     // Reads file line by line
     while(std::getline(stream, line)) {
         if (!isFunction) {
@@ -137,7 +143,7 @@ bool JoyfileParser::parse(Console* parentConsole) {
                             error = Errors::unknownInstruction(projName, linePlace).getAll();
                             return false;
                         }
-                        parentConsole->buildLog("== Name: " + projName + " ==");
+                        Log::buildLog("== Name: " + projName + " ==", CONSOLE_COLOR_WHITE);
                         joyfileProject.name = projName;
 
                         isProject = true;
@@ -187,12 +193,11 @@ bool JoyfileParser::parse(Console* parentConsole) {
                     return false;
                 }
 
-                parentConsole->setInstallLocation(joyfileProject.install_location, joyfileProject.name);
-                parentConsole->setFileName(joyfileProject.output_name, joyfileProject.name);
+                //parentConsole->setInstallLocation(joyfileProject.install_location, joyfileProject.name);
+                //parentConsole->setFileName(joyfileProject.output_name, joyfileProject.name);
 
                 // Resets our project
                 joyfileProject = JoyfileProject();
-                joyfileProject.parentConsole = parentConsole;
                 continue;
             } else if (!isProject && y == '}') {
                 error = Errors::unknownInstruction("Bad Project End", linePlace).getAll();
@@ -255,7 +260,7 @@ bool JoyfileParser::parse(Console* parentConsole) {
                         return false;
 
                     if (finalInstruction == "log") {
-                        parentConsole->buildLog(instruction);
+                        Log::buildLog(instruction, CONSOLE_COLOR_WHITE);
                     } else if (finalInstruction == "output_name") {
                         joyfileProject.output_name = instruction;
                     } else if (finalInstruction == "output_type") {
@@ -271,16 +276,16 @@ bool JoyfileParser::parse(Console* parentConsole) {
                     } else if (finalInstruction == "sources") {
                         sourcesInstructionList.clear();
 
-                        if (boost::filesystem::exists(parentConsole->rawPath + "/.joystick/objects/" + joyfileProject.name + "/dat/.last_comp_time")) {
-                            lastCompileTimeStreamRead.open(parentConsole->rawPath + "/.joystick/objects/" + joyfileProject.name + "/dat/.last_comp_time");
+                        if (boost::filesystem::exists(rawPath + "/.joystick/objects/" + joyfileProject.name + "/dat/.last_comp_time")) {
+                            lastCompileTimeStreamRead.open(rawPath + "/.joystick/objects/" + joyfileProject.name + "/dat/.last_comp_time");
                             lastCompileTimeStreamRead >> lastCompTime;
                             lastCompileTimeStreamRead.close();
 
                             // Check if a source file needs to be recompiled
                             for (int i = 0; i <= instructionList.size() - 1; i++) {
                                 pathSimple = instructionList[i].substr(instructionList[i].find_last_of("/") + 1, instructionList[i].size() - 1);
-                                if ((std::difftime(lastCompTime, boost::filesystem::last_write_time(parentConsole->rawPath + '/' + instructionList[i])) <= 0) ||
-                                        !boost::filesystem::exists(parentConsole->rawPath + "/.joystick/objects/" + joyfileProject.name + '/' + 
+                                if ((std::difftime(lastCompTime, boost::filesystem::last_write_time(rawPath + '/' + instructionList[i])) <= 0) ||
+                                        !boost::filesystem::exists(rawPath + "/.joystick/objects/" + joyfileProject.name + '/' + 
                                         pathSimple.substr(0, pathSimple.find_first_of(".")) + ".o"))
                                     sourcesInstructionList.push_back(instructionList[i]);
                             }
@@ -340,7 +345,7 @@ bool JoyfileParser::parse(Console* parentConsole) {
               std::chrono::duration_cast<std::chrono::milliseconds>(buildTimeEnd - buildTimeStart).count() <<
               " ms)";
 
-    parentConsole->buildLog("Completed successfully " + finalTime.str(), true, CONSOLE_COLOR_GREEN);
+    Log::buildLogBold("Completed successfully " + finalTime.str(), CONSOLE_COLOR_WHITE);
 
     return true;
 }

@@ -32,6 +32,7 @@ private:
 };
 
 struct Errors {
+    static Error invalidJoyfile(const std::string& path);
     static Error invalidParameter(const std::string& parameter, int lineNum);
     static Error unknownFunction(const std::string& function, int lineNum);
     static Error unknownInstruction(const std::string& instruction, int lineNum);

@@ -24,14 +24,14 @@ std::thread compilationThread;
 std::stringstream command;
 
 void getWarnings(std::string command) {
-    warnings = runCommand(command.c_str(), project.parentConsole->debug);
+    warnings = runCommand(command.c_str(), false);
 }
 
 void multithreadComp(bool warnings) {
     compilationThread = std::thread(getWarnings,
             (warnings) ? std::string(command.str() + " -Wall -Wextra 2>&1") : command.str());
     compOut = runCommand(std::string(command.str() + 
-            ((warnings) ? " -w " : "") + "2>" + _rawPath + "/.joystick/output/.comp_out").c_str(), project.parentConsole->debug);
+            ((warnings) ? " -w " : "") + "2>" + _rawPath + "/.joystick/output/.comp_out").c_str(), false);
 
     errOutputStream.open(_rawPath + "/.joystick/output/.comp_out");
 
@@ -50,9 +50,6 @@ bool execute(JoyfileProject _project) {
         errOutputStream.close();
 
     errOutputStream.open(_rawPath + "/.joystick/output/.comp_out");
-
-    if (project.parentConsole->id == JOYSTICK_CONSOLE_UI)
-        project.parentConsole->startLoadingBar(project.sources.size() + 1);
 
     if (project.c_compiler.empty()) {
         errOutput = Errors::missingDefinition("c_compiler").getAll();
@@ -79,7 +76,7 @@ bool execute(JoyfileProject _project) {
         return false;
     }
 
-    _rawPath = project.parentConsole->rawPath;
+    _rawPath = project.rawPath;
 
     std::string lang = project.language, comp, raw, type = project.output_type, staticLib, sharedLib;
     std::ostringstream objects;
@@ -148,14 +145,12 @@ bool execute(JoyfileProject _project) {
         if (!project.extra_compilation_options.empty())
             command << ' ' << project.extra_compilation_options;
 
-        if (project.parentConsole->id == JOYSTICK_CONSOLE_UI)
-            project.parentConsole->updateLoadingBar(1);
-        project.parentConsole->buildLog("Compiling " + source + "...", true /* BOLD */, CONSOLE_COLOR_CYAN /* COLOR */);
+        Log::buildLogBold("Compiling " + source + "...", CONSOLE_COLOR_CYAN);
 
         multithreadComp();
 
-        project.parentConsole->buildLog(compOut);
-        project.parentConsole->buildLog(warnings);
+        Log::buildLog(compOut, CONSOLE_COLOR_WHITE);
+        Log::buildLog(warnings, CONSOLE_COLOR_WHITE);
 
         if (!errOutputCommand.empty()) {
             // Error occured
@@ -196,22 +191,19 @@ bool execute(JoyfileProject _project) {
             command << " -framework " << project.framework;
     }
     
-    if (project.parentConsole->id == JOYSTICK_CONSOLE_UI)
-        project.parentConsole->updateLoadingBar(1);
-
-    project.parentConsole->buildLog("Finishing " + project.output_name + "...", true /* BOLD */, CONSOLE_COLOR_BLUE /* COLOR */);
+    Log::buildLogBold("Finishing " + project.output_name + "...", CONSOLE_COLOR_BLUE);
 
     multithreadComp(staticLib.empty() && sharedLib.empty());
 
-    project.parentConsole->buildLog(compOut);
-    project.parentConsole->buildLog(warnings);
+    Log::buildLog(compOut, CONSOLE_COLOR_WHITE);
+    Log::buildLog(warnings, CONSOLE_COLOR_WHITE);
 
     errOutputStream.close();
 
     if (!errOutputCommand.empty()) {
         // Error occured
         errOutput = "Compilation failed";
-        project.parentConsole->buildLog(errOutputCommand);
+        Log::buildLog(errOutputCommand, CONSOLE_COLOR_WHITE);
         return false;
     }
 

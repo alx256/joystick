@@ -24,7 +24,12 @@ std::string Error::getName() {
     return name;
 }
 std::string Error::getAll() {
-    return "[" + name + "] " + contents + " (" + identifier + ")\n";
+    return "[ERROR] " + name + ": " + contents + " (" + identifier + ")\n";
+}
+
+Error Errors::invalidJoyfile(const std::string& path) {
+    return Error("Invalid Joyfile " + path + ". Please check the permissions and that it is not corrupted",
+            "Joyfile Read Error", "Z");
 }
 
 Error Errors::invalidParameter(const std::string& parameter, int lineNum) {

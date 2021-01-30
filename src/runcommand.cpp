@@ -14,7 +14,7 @@
 
 #include "runcommand.h"
 
-std::string runCommand(const char * command, bool debug) {
+std::string runCommand(const std::string& command, bool debug) {
     std::array<char, 128> buffer;
     std::string ret;
     std::ostringstream ss;
@@ -24,7 +24,7 @@ std::string runCommand(const char * command, bool debug) {
         ret += ss.str();
     }
 
-    FILE* pipe = popen(command, "r");
+    FILE* pipe = popen(command.c_str(), "r");
     while (fgets(buffer.data(), 128, pipe) != NULL)
         ret += buffer.data();
 
