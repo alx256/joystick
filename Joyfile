@@ -19,14 +19,13 @@ project: "Joystick" {
     ]
 	output_name("joystick")
 	language("C++")
-	sources("src/console.cpp",
-			"src/consoleui.cpp",
-			"src/errors.cpp",
+	sources("src/errors.cpp",
 			"src/executeprocess.cpp",
 			"src/main.cpp",
 			"src/readandparse.cpp",
 			"src/runcommand.cpp",
-			"src/directory.cpp")
+			"src/directory.cpp",
+            "src/log.cpp")
 	shared_lib("boost_filesystem",
 			"boost_system",
 			"curses",
@@ -34,6 +33,6 @@ project: "Joystick" {
 			"form")
 	include_paths("/usr/local/include", "/usr/include")
 	link_paths("/usr/local/lib", "/usr/include")
-	extra_compilation_options("-g -std=c++17")
+	extra_compilation_options("-g -std=c++17 -pthread")
     install_location("/usr/local/bin/")
 }
