@@ -20,8 +20,6 @@
 #include <utility>
 #include <optional>
 
-#include <boost/filesystem.hpp>
-
 #include "readandparse.h"
 #include "runcommand.h"
 #include "log.h"
@@ -57,7 +55,7 @@ void build() {
 
     std::cout << "[INFO] Starting build with joyfile " << nextArg << "/Joyfile\n";
 
-    if (!boost::filesystem::exists(nextArg + "/Joyfile")) {
+    if (!std::filesystem::exists(nextArg + "/Joyfile")) {
         std::cerr << "[ERROR] Joyfile does not exist\n";
         return;
     }

@@ -276,7 +276,7 @@ bool JoyfileParser::parse() {
                     } else if (finalInstruction == "sources") {
                         sourcesInstructionList.clear();
 
-                        if (boost::filesystem::exists(rawPath + "/.joystick/objects/" + joyfileProject.name + "/dat/.last_comp_time")) {
+                        if (std::filesystem::exists(rawPath + "/.joystick/objects/" + joyfileProject.name + "/dat/.last_comp_time")) {
                             lastCompileTimeStreamRead.open(rawPath + "/.joystick/objects/" + joyfileProject.name + "/dat/.last_comp_time");
                             lastCompileTimeStreamRead >> lastCompTime;
                             lastCompileTimeStreamRead.close();
@@ -284,11 +284,14 @@ bool JoyfileParser::parse() {
                             // Check if a source file needs to be recompiled
                             for (int i = 0; i <= instructionList.size() - 1; i++) {
                                 pathSimple = instructionList[i].substr(instructionList[i].find_last_of("/") + 1, instructionList[i].size() - 1);
-                                if ((std::difftime(lastCompTime, boost::filesystem::last_write_time(rawPath + '/' + instructionList[i])) <= 0) ||
-                                        !boost::filesystem::exists(rawPath + "/.joystick/objects/" + joyfileProject.name + '/' + 
+                                std::filesystem::file_time_type lastWrite = std::filesystem::last_write_time(rawPath + '/' + instructionList[i]);
+                                time_t lastWriteTime = std::chrono::system_clock::to_time_t(std::chrono::file_clock::to_sys(lastWrite));
+                                if ((std::difftime(lastCompTime, lastWriteTime) <= 0) ||
+                                        !std::filesystem::exists(rawPath + "/.joystick/objects/" + joyfileProject.name + '/' + 
                                         pathSimple.substr(0, pathSimple.find_first_of(".")) + ".o"))
                                     sourcesInstructionList.push_back(instructionList[i]);
                             }
+
                             if (sourcesInstructionList.empty())
                                 joyfileProject.nothingMoreToGen = true;
                             else
@@ -392,8 +395,16 @@ bool JoyfileParser::functionActions(std::string& instruction) {
             // TODO: Add float support
             break;
         case TOTEM_TYPE_LIST(TOTEM_TYPE_STRING):
-            boost::split(instructionList, instruction, boost::is_any_of(","));
-            for (std::string& instr : instructionList) if (!strAction(instr)) return false;
+            std::stringstream data(instruction);
+            std::string instructionElement;
+
+            while (std::getline(data, instructionElement, ','))
+                instructionList.push_back(instructionElement);
+
+            for (std::string& instr : instructionList)
+                if (!strAction(instr))
+                    return false;
+
             return true;
         }
     }

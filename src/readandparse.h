@@ -23,15 +23,15 @@ class Console;
 #include <algorithm>
 #include <map>
 #include <chrono>
-
-#include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include "macros.h"
 #include "joyfileproject.h"
 #include "errors.h"
 #include "executeprocess.h"
 #include "log.h"
+
+using namespace std::chrono_literals;
 
 class JoyfileParser {
 public:

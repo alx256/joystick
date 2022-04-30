@@ -19,8 +19,7 @@
 #include <chrono>
 #include <fstream>
 #include <thread>
-
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include "joyfileproject.h"
 #include "errors.h"

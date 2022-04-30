@@ -123,10 +123,6 @@ bool execute(JoyfileProject _project) {
         }
 
         std::string objectFile = _rawPath + "/.joystick/objects/" + project.name + "/" + raw + ".o";
-        // Don't bother recompiling if the .o file for the source
-        // file already exists
-        if (boost::filesystem::exists(objectFile))
-            continue;
 
         if (lang == "C++" || lang == "C" || lang == "c++" || lang == "c" || lang == "cpp") {
             command << comp
@@ -164,8 +160,8 @@ bool execute(JoyfileProject _project) {
 
     command.str("");
 
-    for (auto const& file : boost::filesystem::directory_iterator(_rawPath + "/.joystick/objects/" + project.name + '/'))
-        if (!boost::filesystem::is_directory(file.path().string())) objects << file.path().string() << " ";
+    for (auto const& file : std::filesystem::directory_iterator(_rawPath + "/.joystick/objects/" + project.name + '/'))
+        if (!std::filesystem::is_directory(file.path().string())) objects << file.path().string() << " ";
 
     if (!staticLib.empty())
         command << staticLib << " " << project.output_name << " " << objects.str();

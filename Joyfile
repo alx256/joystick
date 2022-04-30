@@ -26,13 +26,9 @@ project: "Joystick" {
 			"src/runcommand.cpp",
 			"src/directory.cpp",
             "src/log.cpp")
-	shared_lib("boost_filesystem",
-			"boost_system",
-			"curses",
-			"pthread",
-			"form")
+	shared_lib("pthread")
 	include_paths("/usr/local/include", "/usr/include")
 	link_paths("/usr/local/lib", "/usr/include")
-	extra_compilation_options("-g -std=c++17 -pthread")
+	extra_compilation_options("-g -std=c++20 -pthread")
     install_location("/usr/local/bin/")
 }

@@ -16,8 +16,7 @@
 
 #include <string>
 #include <vector>
-
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 class JoystickDirectory {
 public:

@@ -15,9 +15,10 @@
 #  limitations under the License.
 
 J_BOOST_LINK=/usr/local/include/
-J_ARGS="-pthread -std=c++17 -I/usr/local/include"
+J_ARGS="-pthread -std=c++20 -I/usr/local/include"
 J_FAILED=false
 J_OBJS=""
+J_WITH_CONSOLE=false
 
 if  [[ "$OSTYPE" == "darwin"* ]]; then
 	J_COMP="/Library/Developer/CommandLineTools/usr/bin/c++"
@@ -27,6 +28,11 @@ fi
 
 if [[ "$1" == "--with-ncursesw" ]]; then
 	J_ARGS+=" -DUSE_NCURSESW=yes"
+fi
+
+if [[ "$1" == "--with-console" ]]; then
+    J_ARGS+=" -DWITH_CONSOLE"
+    J_WITH_CONSOLE=true
 fi
 
 echo "Building Joystick..."
@@ -48,7 +54,13 @@ for file in *.cpp; do
 done
 
 if [ $J_FAILED = false ]; then
-	${J_COMP} -pthread ${J_ARGS} ${J_OBJS} -o joystick -lcurses -lform -lboost_system -lboost_filesystem -L/usr/local/lib
+    J_FINAL_ARGS="-pthread ${J_ARGS} ${J_OBJS} -o joystick"
+
+    if [ $J_WITH_CONSOLE = true ]; then
+        J_FINAL_ARGS+=" -lcurses"
+    fi
+
+	${J_COMP} ${J_FINAL_ARGS}
 	if [ $? -eq 0 ]; then
 		echo "Building Joystick complete!"
 		mv joystick ..
